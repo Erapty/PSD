@@ -7,7 +7,7 @@
 #define ADMIN_PASS "1234"
 #define VEHICLE_FILE "vehicles.txt"
 
-void adminMenu(list *vehicles);
+void adminMenu(List *vehicles);
 void clientMenu(List vehicles);
 void loadVehicle(List *vehicles);
 void saveVehicle(List vehicles);
