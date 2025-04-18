@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include "list.h"
+#include "storage.h"
 
 #define MAX_NAME 50
 #define ADMIN_PASS "1234"
@@ -9,12 +10,11 @@
 
 void adminMenu(List *vehicles);
 void clientMenu(List vehicles);
-void loadVehicles(List *vehicles);
-void saveVehicles(List vehicles);
+
 
 int main(){
     List vehicleList = newList();
-    vehicleList=loadVehicles(&VEHICLE_FILE);
+    vehicleList=load_vehicles_from_file(&VEHICLE_FILE);
 
     printf("Welcome to Car Sharing Service\n");
     printf("Are you an Admin or a CLient?  (a/c): ");
@@ -35,7 +35,7 @@ int main(){
     }else{
         clientMenu(vehicleList);
     }
-    saveVehicles(vehicleList);
+    save_vehicles_to_file(vehicleList);
     freeList(vehicleList);
     return 0;
 }
