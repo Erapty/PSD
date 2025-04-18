@@ -116,3 +116,8 @@ int FindValue(List List, void *Value)
     }
     return Pos;
 }
+
+int GetSize(List List)
+{
+    return List->ItemCount;
+}
