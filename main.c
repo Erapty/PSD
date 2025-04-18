@@ -9,8 +9,8 @@
 
 void adminMenu(List *vehicles);
 void clientMenu(List vehicles);
-void loadVehicle(List *vehicles);
-void saveVehicle(List vehicles);
+void loadVehicles(List *vehicles);
+void saveVehicles(List vehicles);
 
 int main(){
     List vehicleList = newList();
