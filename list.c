@@ -45,7 +45,7 @@ int InsertValue(List List, void *Item)
 }
 
 // Returns the item at a certain position
-void GetItem(List List, int Position)
+void *GetItem(List List, int Position)
 {
     Node Current = List->Head;
     for (int i = 1; i < Position; i++)
