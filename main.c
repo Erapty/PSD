@@ -14,7 +14,7 @@ void saveVehicles(List vehicles);
 
 int main(){
     List vehicleList = newList();
-    loadVehicles(&vehicleList);
+    vehicleList=loadVehicles(&VEHICLE_FILE);
 
     printf("Welcome to Car Sharing Service\n");
     printf("Are you an Admin or a CLient?  (a/c): ");
@@ -30,6 +30,7 @@ int main(){
         }
         else{
             printf("Incorrect password.\n");
+            return 0;
         }
     }else{
         clientMenu(vehicleList);
