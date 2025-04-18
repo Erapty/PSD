@@ -29,7 +29,7 @@ typedef struct{
 
 bool booked(vehicle *a){
     if(!a)exit(-1);
-    return a->booked;
+    return (a->booked);
 }
 //it inserts a plate in a vehicle structure(a)
 insert_plate(vehicle *a){
@@ -58,16 +58,16 @@ insert_plate(vehicle *a){
             else
                 valid=false;
         }
-        if valid=false{
+        if (valid==false){
             a->plate[0]={0,0,0,0,0,0,0}
             printf("\n--invalid plate--");
         }
-    }while(valid==false)   
+    }while(valid==false);   
 }
 //it define a coast to a structure vehicle
 define_cost(vehicle *a){
     if(!a)exit(-1);
-    float base;
+    float base,cost;
     //cost variation based on vehicle type
     if(a->type=="sedan")
         base=cost_sedan;
@@ -86,7 +86,7 @@ define_cost(vehicle *a){
     if(a->type=="station wagon")
         base=cost_station_wagon;
     //cost variation based on seats and year of registration
-    cost=base*(seats/5)*((year-1950)/10) 
+    cost=base*(seats/5)*((year-1950)/10);
     
 }
 //it inserts a number n in the field seats of the structure a
