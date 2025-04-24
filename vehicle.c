@@ -32,7 +32,7 @@ bool booked(vehicle *a){
     return (a->booked);
 }
 //it inserts a plate in a vehicle structure(a)
-insert_plate(vehicle *a){
+void insert_plate(vehicle *a){
     if(!a)exit(-1);
     char c;
     int i;
@@ -65,7 +65,7 @@ insert_plate(vehicle *a){
     }while(valid==false);   
 }
 //it define a coast to a structure vehicle
-define_cost(vehicle *a){
+void define_cost(vehicle *a){
     if(!a)exit(-1);
     float base,cost;
     //cost variation based on vehicle type
@@ -100,17 +100,17 @@ void insert_type(vehicle *a,char *s){
     strcpy(a->type,s);
 }
 //it insert a string s in the field fuel of structure a
-insert_fuel(vehicle *a,char *s){
+void insert_fuel(vehicle *a,char *s){
     if(!a)exit(-1);
     strcpy(a->fuel,s);
 }
 //it insert a string s in the field brand of structure a
-insert_brand(vehicle *a,char *s){
+void insert_brand(vehicle *a,char *s){
     if(!a)exit(-1);
     strcpy(a->brand,s);
 }
 //it insert a string s in the field model of structure a
-insert_model(vehicle *a,char *s){
+void insert_model(vehicle *a,char *s){
     if(!a)exit(-1);
     strcpy(a->model,s);
 }
@@ -120,7 +120,7 @@ void instert_year(vehicle *a,int n){
     a->year=n;
 }
 
-insert_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year){
+List insert_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year){
     insert_model(v,model);
     insert_brand(v,brand);
     insert_plate(v,plate);

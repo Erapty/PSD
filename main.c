@@ -35,7 +35,7 @@ int main(){
     }else{
         clientMenu(vehicleList);
     }
-    save_vehicles_to_file(vehicleList);
+    
     freeList(vehicleList);
     return 0;
 }

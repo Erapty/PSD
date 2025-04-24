@@ -1,10 +1,10 @@
 bool booked(vehicle *a);
-insert_plate(vehicle *a);
-define_cost(vehicle *a);
+void insert_plate(vehicle *a);
+void define_cost(vehicle *a);
 void instert_seats(vehicle *a,int n);
 void insert_type(vehicle *a,char *s);
-insert_fuel(vehicle *a,char *s);
-insert_brand(vehicle *a,char *s);
-insert_model(vehicle *a,char *s);
-insert_year(vehicle *a,int n);
-insert_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year);
+void insert_fuel(vehicle *a,char *s);
+void insert_brand(vehicle *a,char *s);
+void insert_model(vehicle *a,char *s);
+void insert_year(vehicle *a,int n);
+List insert_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year);
