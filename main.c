@@ -26,16 +26,18 @@ int main(){
         printf("Enter admin password: ");
         scanf("%s",pass);
         if(strcmp(pass,ADMIN_PASS)==0){
-            adminMenu(&vehicleList);
+            vehicleList=adminMenu(&vehicleList);
         }
         else{
             printf("Incorrect password.\n");
             return 0;
         }
     }else{
-        clientMenu(vehicleList);
+        vehicleList=clientMenu(vehicleList);
     }
-    
+
+    save_vehicles_to_file(VEHICLE_FILE,vehicleList);
+
     freeList(vehicleList);
     return 0;
 }
