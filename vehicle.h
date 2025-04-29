@@ -7,4 +7,5 @@ void insert_fuel(vehicle *a,char *s);
 void insert_brand(vehicle *a,char *s);
 void insert_model(vehicle *a,char *s);
 void insert_year(vehicle *a,int n);
-List insert_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year);
+void make_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year);
+void view_vehicle(vehicle *a);

@@ -3,6 +3,7 @@
 #include<string.h>
 #include "list.h"
 #include "storage.h"
+#include "client.h"
 
 #define MAX_NAME 50
 #define ADMIN_PASS "1234"

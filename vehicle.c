@@ -119,8 +119,8 @@ void instert_year(vehicle *a,int n){
     if(!a) extit(-1);
     a->year=n;
 }
-
-List insert_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year){
+//makes a new vehicle with inserted datas;
+void make_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year){
     insert_model(v,model);
     insert_brand(v,brand);
     insert_plate(v,plate);
@@ -130,4 +130,21 @@ List insert_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, ch
     instert_seats(v,seats);
     define_cost(v);
     v->booked=false;
+}
+//views a note vehicle with all his fields.
+view_vehicle(*a){
+
+    printf("\n\n\t____________________
+            \n\tplate : %s;
+            \n\thourly cost : %f;
+            \n\tseats number : %d;
+            \n\tfuel : %s;
+            \n\ttype : %s;
+            \n\tbrand : %s;
+            \n\tmodel : %s;
+            \n\tyear : %d;
+            \n\t____________________",a->plate,&a->cost,&a->seats,a->fuel,a->type,a->brand,a->model,&a->year);
+
+            
+            
 }
