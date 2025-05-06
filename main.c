@@ -1,44 +1,75 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "list.h"
+#include "vehicle.h"
+#include "booking.h"
 #include "storage.h"
 #include "client.h"
+#include "admin.h"
 
-#define MAX_NAME 50
-#define ADMIN_PASS "1234"
-#define VEHICLE_FILE "vehicles.txt"
+// Function to display the main menu
+void displayMainMenu() {
+    printf("\n--- Main Menu ---\n");
+    printf("1. Admin Login\n");
+    printf("2. Client Login\n");
+    printf("3. Exit\n");
+    printf("Please select an option: ");
+}
 
-void adminMenu(List *vehicles);
-void clientMenu(List vehicles);
+// Function to display the login menu for admin
+int adminLogin() {
+    char password[20];
+    printf("Enter admin password: ");
+    scanf("%s", password);
+    return strcmp(password, "1234") == 0;
+}
 
+// Function to display the login menu for client
+void clientLogin(char* username) {
+    printf("Enter your username: ");
+    scanf("%s", username);
+}
 
-int main(){
-    List vehicleList = newList();
-    vehicleList=load_vehicles_from_file(&VEHICLE_FILE);
+int main() {
+    List vehicles, bookings;
+    createList(&vehicles);
+    createList(&bookings);
 
-    printf("Welcome to Car Sharing Service\n");
-    printf("Are you an Admin or a CLient?  (a/c): ");
-    char role;
-    scanf(" %c",&role);
+    loadVehicles(&vehicles);
+    loadBookings(&bookings);
 
-    if(role=='a'){
-        char pass[20];
-        printf("Enter admin password: ");
-        scanf("%s",pass);
-        if(strcmp(pass,ADMIN_PASS)==0){
-            vehicleList=adminMenu(&vehicleList);
+    int option;
+    char username[50];
+
+    while (1) {
+        displayMainMenu();
+        scanf("%d", &option);
+
+        switch (option) {
+            case 1:
+                if (adminLogin()) {
+                    adminMenu(&vehicles, &bookings);
+                } else {
+                    printf("Invalid admin password!\n");
+                }
+                break;
+
+            case 2:
+                clientLogin(username);
+                clientMenu(username, &vehicles, &bookings);
+                break;
+
+            case 3:
+                saveVehicles(&vehicles);
+                saveBookings(&bookings);
+                printf("Exiting program...\n");
+                return 0;
+
+            default:
+                printf("Invalid option! Please try again.\n");
         }
-        else{
-            printf("Incorrect password.\n");
-            return 0;
-        }
-    }else{
-        vehicleList=clientMenu(vehicleList);
     }
 
-    save_vehicles_to_file(VEHICLE_FILE,vehicleList);
-
-    freeList(vehicleList);
     return 0;
 }
