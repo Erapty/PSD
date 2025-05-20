@@ -1,75 +1,70 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdbool.h>
+#include "admin.h"
+#include "client.h"
+#include "storage.h"
+#include "hash.h"
 #include "list.h"
 #include "vehicle.h"
+#include "user.h"
 #include "booking.h"
-#include "storage.h"
-#include "client.h"
-#include "admin.h"
 
-// Function to display the main menu
-void displayMainMenu() {
-    printf("\n--- Main Menu ---\n");
-    printf("1. Admin Login\n");
-    printf("2. Client Login\n");
-    printf("3. Exit\n");
-    printf("Please select an option: ");
-}
-
-// Function to display the login menu for admin
-int adminLogin() {
-    char password[20];
-    printf("Enter admin password: ");
-    scanf("%s", password);
-    return strcmp(password, "1234") == 0;
-}
-
-// Function to display the login menu for client
-void clientLogin(char* username) {
-    printf("Enter your username: ");
-    scanf("%s", username);
-}
+/*
+ * File: main.c
+ * ------------
+ * Entry point for the car sharing system.
+ * Initializes data structures, loads data from files, and provides
+ * the main menu for selecting between admin and client interfaces.
+ */
 
 int main() {
-    List vehicles, bookings;
-    createList(&vehicles);
-    createList(&bookings);
+    // Initialize data structures
+    HashTable* vehicleTable = createHashTable();
+    HashTable* userTable = createHashTable();
+    List bookingList = createList();
 
-    loadVehicles(&vehicles);
-    loadBookings(&bookings);
+    // Load data from files
+    LoadVehiclesFromFile(vehicleTable, "vehicles.txt");
+    LoadUsersFromFile(userTable, "users.txt");
+    LoadBookingsFromFile(bookingList, "bookings.txt", vehicleTable, userTable);
 
-    int option;
-    char username[50];
+    int choice;
+    bool running = true;
 
-    while (1) {
-        displayMainMenu();
-        scanf("%d", &option);
+    // Main program loop
+    while (running) {
+        printf("Welcome to the Car Sharing System\n");
+        printf("1. Admin Login\n");
+        printf("2. Client Login\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar(); // flush newline
 
-        switch (option) {
+        switch (choice) {
             case 1:
-                if (adminLogin()) {
-                    adminMenu(&vehicles, &bookings);
-                } else {
-                    printf("Invalid admin password!\n");
-                }
+                adminMenu(vehicleTable, userTable, bookingList);
                 break;
-
             case 2:
-                clientLogin(username);
-                clientMenu(username, &vehicles, &bookings);
+                clientMenu(vehicleTable, userTable, bookingList);
                 break;
-
-            case 3:
-                saveVehicles(&vehicles);
-                saveBookings(&bookings);
-                printf("Exiting program...\n");
-                return 0;
-
+            case 0:
+                printf("Saving data and exiting...\n");
+                SaveVehiclesToFile(vehicleTable, "vehicles.txt");
+                SaveUsersToFile(userTable, "users.txt");
+                SaveBookingsToFile(bookingList, "bookings.txt");
+                running = false;
+                break;
             default:
-                printf("Invalid option! Please try again.\n");
+                printf("Invalid choice. Try again.\n");
         }
     }
+
+    // Free memory
+    freeHashTable(vehicleTable);
+    freeHashTable(userTable);
+    freeList(bookingList);
 
     return 0;
 }
