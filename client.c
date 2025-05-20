@@ -1,54 +1,95 @@
-#include "list.h"
-#include "vehicle.h"
 #include <stdio.h>
-//views all vehicle if vehicleList is not null and there is at least one car available.
-void view_vehicle(vehicleList){
-    if(vehicleList==NULL){
-        printf("\nview_vehicle error : list not found.");
-        exit(-1);
-    }
-    if(vehicleList->ItemCount==0){
-        printf("\nno vehicle avaibles.");
-        exit(0);
-    }
-    Node current=vehicleList->head;
-    printf("\nvehicles list (%d availables):",&vehicleList->ItemCount);
-    for(int i=0;i<vehicleList->ItemCount;i++;){
-        view_vehicle(current->head->item);
-        current=current->next;
-    }
-    printf("\n\nend of the list."):
+#include <stdlib.h>
+#include <string.h>
+#include "client.h"
+#include "vehicle.h"
+#include "user.h"
+#include "booking.h"
+#include "timeutils.h"
 
-}
-//keeps the menu open until 0 is entred to exit.
-void clientmenu(list vehicleList){
+/*
+ * File: client.c
+ * --------------
+ * Implements the client interface of the car sharing system.
+ * Handles user login/creation and provides options for viewing vehicles,
+ * creating bookings, and viewing personal booking history.
+ */
+
+/*
+ * Function: clientMenu
+ * --------------------
+ * Displays the client menu and processes user input to view available
+ * vehicles, make bookings, and view personal bookings. Automatically
+ * registers a new user if not found.
+ *
+ * vehicleTable: hash table containing all vehicles
+ * userTable: hash table containing all users
+ * bookingList: list of all bookings
+ */
+void clientMenu(HashTable* vehicleTable, HashTable* userTable, List bookingList) {
+    char firstName[50], lastName[50];
+
+    // Client login
+    printf("\n=== CLIENT LOGIN ===\n");
+    printf("Enter your first name: ");
+    fgets(firstName, sizeof(firstName), stdin);
+    strtok(firstName, "\n");  // Remove newline
+
+    printf("Enter your last name: ");
+    fgets(lastName, sizeof(lastName), stdin);
+    strtok(lastName, "\n");
+
+    // Generate username and check existence
+    char* username = generateUsername(firstName, lastName);
+    User* user = findUser(userTable, username);
+    if (!user) {
+        printf("New user. Creating your account...\n");
+        user = createUser(username, firstName, lastName);
+        insertUser(userTable, user);
+    } else {
+        printf("Welcome back, %s %s!\n", firstName, lastName);
+    }
+
     int choice;
-    bool error=false;
-    do{
-        printf("client menu:
-            \n\twhat want you to do?
-            \n\n\t0. exit the menu;
-            \n\t1. view available cars;
-            \n\t2.book a car;
-            \n\n\t enter your choice :");
-        scanf("%d",choice);
-        switch(choice){
-            case 0:
-                printf("exit menu");
-                exit(1);
-            case 1:
-                view_vehicle(vehicleList);
-                error=false;
+    do {
+        printf("\n=== CLIENT MENU ===\n");
+        printf("1. View available vehicles\n");
+        printf("2. Make a booking\n");
+        printf("3. View your bookings\n");
+        printf("0. Log out\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice); getchar();  // Flush newline
+
+        switch (choice) {
+            case 1: {
+                // Request availability range
+                char datetime[32];
+                int duration;
+                printf("Enter desired start date (YYYY-MM-DD HH): ");
+                fgets(datetime, sizeof(datetime), stdin);
+                datetime[strcspn(datetime, "\n")] = 0;
+                printf("Enter duration in hours: ");
+                scanf("%d", &duration); getchar();
+
+                long start = convertToTimestamp(datetime);
+                long end = start + duration;
+                printAvailableVehiclesAt(vehicleTable, bookingList, start, end);
                 break;
+            }
             case 2:
-                make_reservation(vehicleList);
-                error=false;
+                createBookingPrompt(vehicleTable, bookingList, username);
+                break;
+            case 3:
+                printUserBookings(bookingList, username);
+                break;
+            case 0:
+                printf("Logging out...\n");
                 break;
             default:
-                printf("\ninvalid choice.")
-                error=true;
-                break;
+                printf("Invalid choice. Please try again.\n");
         }
-    }while(error=true);
 
+    } while (choice != 0);
+
+    free(username);
 }
