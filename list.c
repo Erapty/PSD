@@ -1,124 +1,104 @@
-#include "list.h"
 #include <stdlib.h>
+#include "list.h"
 
-typedef struct Node
-{
-    void *Item; // Item will be a void* so that the list can hold any value
-    struct Node *Next;
-} *Node;
+/*
+ * File: list.c
+ * ------------
+ * Implements a simple singly linked list for storing generic pointers.
+ * Provides basic operations such as creation, insertion, retrieval,
+ * size calculation, and cleanup.
+ */
 
-typedef struct List
-{
-    int ItemCount;
-    Node Head;
-    Node Tail;
-} *List;
+// Structure representing a node in the list
+typedef struct Node {
+    void* data;
+    struct Node* next;
+} Node;
 
-// Creates a new empty list
-List CreateList()
-{
-    List NewList = malloc(sizeof(List));
-    NewList->ItemCount = 0;
-    NewList->Head = NULL;
-    NewList->Tail = NULL;
+// Structure representing the list itself
+struct List {
+    Node* head;
+    int size;
+};
 
-    return NewList;
+/*
+ * Function: createList
+ * --------------------
+ * Allocates and initializes an empty linked list.
+ *
+ * returns: pointer to the new List
+ */
+List createList() {
+    List list = malloc(sizeof(struct List));
+    if (!list) return NULL;
+    list->head = NULL;
+    list->size = 0;
+    return list;
 }
 
-// Inserts a value into the list. Since it is a pointer, the value should not be edited anymore outside of the list functions.
-// Returns the position of the new item
-int InsertValue(List List, void *Item)
-{
-    Node NewNode = malloc(sizeof(Node));
-    NewNode->Item = Item;
-    NewNode->Next = NULL;
-
-    List->Tail->Next = NewNode;
-    List->Tail = NewNode;
-
-    if (List->ItemCount == 0)
-    { // The list was empty, update the head
-        List->Head = Item;
-    }
-    List->ItemCount++;
-    return List->ItemCount - 1;
+/*
+ * Function: insertList
+ * --------------------
+ * Inserts an item at the beginning of the list.
+ *
+ * list: pointer to the list
+ * item: pointer to the data to be inserted
+ *
+ * returns: 0 on success, -1 on memory allocation failure
+ */
+int insertList(List list, void* item) {
+    Node* node = malloc(sizeof(Node));
+    if (!node) return -1;
+    node->data = item;
+    node->next = list->head;
+    list->head = node;
+    list->size++;
+    return 0;
 }
 
-// Returns the item at a certain position
-void *GetItem(List List, int Position)
-{
-    Node Current = List->Head;
-    for (int i = 1; i < Position; i++)
-    {
-        Current = Current->Next;
-    }
-    return Current->Item;
+/*
+ * Function: getItem
+ * -----------------
+ * Retrieves the item at a specific index in the list.
+ *
+ * list: pointer to the list
+ * index: index of the item to retrieve (0-based)
+ *
+ * returns: pointer to the item, or NULL if index is invalid
+ */
+void* getItem(List list, int index) {
+    if (!list || index < 0 || index >= list->size) return NULL;
+    Node* current = list->head;
+    for (int i = 0; i < index; i++) current = current->next;
+    return current->data;
 }
 
-// Deletes the value at a given position in the list.
-// You can find the position of a certain item with FindValue()
-void DeleteValue(List List, int Position)
-{
-    if (List->ItemCount >= Position)
-    {
-        // The position is not in the list
-        return;
-    }
-
-    Node Previous;
-    Node ToDelete;
-    Node Current;
-    for (int i = 0; i < Position + 1; i++)
-    {
-        if (i == 0)
-        {
-            Current = List->Head;
-        }
-        else
-        {
-            Current = Current->Next;
-        }
-
-        switch (i - Position)
-        {
-        case -1:
-            Previous = Current;
-            break;
-        case 0:
-            ToDelete = Current;
-            break;
-        }
-    }
-
-    Previous->Next = Current;
-    free(ToDelete);
-    if (Current == NULL)
-    {
-        List->Tail = Previous;
-    }
-    return;
+/*
+ * Function: getSize
+ * -----------------
+ * Returns the number of elements in the list.
+ *
+ * list: pointer to the list
+ *
+ * returns: number of elements, or 0 if list is NULL
+ */
+int getSize(List list) {
+    return list ? list->size : 0;
 }
 
-// Finds a certain value in the list and returns its position
-// Returns -1 if it does not find it
-int FindValue(List List, void *Value)
-{
-    int Pos = -1;
-    Node Current = List->Head;
-    for (int i = 0; i < List->ItemCount; i++)
-    {
-        if (Current->Item == Value)
-        {
-            Pos = i;
-            break;
-        }
-        Current = Current->Next;
+/*
+ * Function: freeList
+ * ------------------
+ * Frees all memory associated with the list and its nodes.
+ *
+ * list: pointer to the list
+ */
+void freeList(List list) {
+    Node* current = list->head;
+    while (current) {
+        Node* temp = current;
+        current = current->next;
+        free(temp);
     }
-    return Pos;
-}
-
-// Returns the amount of items in the list
-int GetSize(List List)
-{
-    return List->ItemCount;
+    free(list);
 }
