@@ -1,150 +1,212 @@
-#include "vehicle.h"
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include "vehicle.h"
+#include "hash.h"
+#include "list.h"
+#include "booking.h"
 
-//defining default coasts
-#define cost_sedan 1;
-#define cost_station_wagon 1;
-#define cost_small_car 1;
-#define cost_minivan 1;
-#define cost_suv 1;
-#define cost_cabrio 1;
-#define cost_coupe 1;
-#define cost_city_car 1;
+/*
+ * File: vehicle.c
+ * ----------------
+ * Contains functions for creating, managing, and displaying vehicle records
+ * used in the car sharing system. Vehicles are stored in a hash table and 
+ * can be inserted, retrieved, listed, and filtered based on availability.
+ */
 
-typedef struct{
-    char *plate;
+// Internal structure of Vehicle
+struct Vehicle {
+    char* plate;
     float cost;
     int seats;
-    char *type;
-    char *fuel;
-    char *brand;
-    char *model;
-    bool booked;
+    char* type;
+    char* fuel;
+    char* brand;
+    char* model;
     int year;
+    char* location;
+};
 
-    }vehicle;
-//it returns 1 if a is booked,else 0
+/*
+ * Function: createVehicle
+ * -----------------------
+ * Allocates and initializes a new vehicle instance with the given parameters.
+ *
+ * plate: license plate of the vehicle
+ * cost: hourly rental cost
+ * seats: number of seats in the vehicle
+ * type: vehicle type (e.g., car, van)
+ * fuel: fuel type (e.g., petrol, diesel)
+ * brand: brand of the vehicle
+ * model: model of the vehicle
+ * year: manufacturing year
+ * location: location of the vehicle
+ *
+ * returns: pointer to the newly created Vehicle object
+ */
+Vehicle* createVehicle(const char* plate, float cost, int seats, const char* type,
+                       const char* fuel, const char* brand, const char* model,
+                       int year, const char* location) {
+    Vehicle* v = malloc(sizeof(Vehicle));
+    if (!v) return NULL;
 
-bool booked(vehicle *a){
-    if(!a)exit(-1);
-    return (a->booked);
+    v->plate = strdup(plate);
+    v->cost = cost;
+    v->seats = seats;
+    v->type = strdup(type);
+    v->fuel = strdup(fuel);
+    v->brand = strdup(brand);
+    v->model = strdup(model);
+    v->year = year;
+    v->location = strdup(location);
+    return v;
 }
-//it inserts a plate in a vehicle structure(a)
-void insert_plate(vehicle *a){
-    if(!a)exit(-1);
-    char c;
-    int i;
-    bool valid=true;
-    do{
-        printf("\ninsert plate :");
-        c=getchar();
-        for(i=0;i<2;i++){
-            if((c>='a' && c<='z')||(c>='A' && c<='z'))
-                a->plate[i]=c;
-            else
-                valid=false;
-        }
-        for(;i<3;i++){
-            if(c>='0' && c<='9')
-                a->plate[i]=c;
-            else
-                valid=false;
-        }
-        for(i=0;i<2;i++){
-            if((c>='a' && c<='z')||(c>='A' && c<='z'))
-                a->plate[i]=c;
-            else
-                valid=false;
-        }
-        if (valid==false){
-            a->plate[0]={0,0,0,0,0,0,0}
-            printf("\n--invalid plate--");
-        }
-    }while(valid==false);   
-}
-//it define a coast to a structure vehicle
-void define_cost(vehicle *a){
-    if(!a)exit(-1);
-    float base,cost;
-    //cost variation based on vehicle type
-    if(a->type=="sedan")
-        base=cost_sedan;
-    if(a->type=="small car")
-        base=cost_small_car;
-    if(a->type=="cabrio")
-        base=cost_cabrio;
-    if(a->type=="city car")
-        base=cost_city_car;
-    if(a->type=="coupe")
-        base=cost_coupe;
-    if(a->type=="minivan")
-        base=cost_minivan;
-    if(a->type=="suv")
-        base=cost_suv;
-    if(a->type=="station wagon")
-        base=cost_station_wagon;
-    //cost variation based on seats and year of registration
-    cost=base*(seats/5)*((year-1950)/10);
-    
-}
-//it inserts a number n in the field seats of the structure a
-void instert_seats(vehicle *a,int n){
-    if(!a) extit(-1);
-    a->seats=n;
-}
-//it insert a string s in the field type of structure a
-void insert_type(vehicle *a,char *s){
-    if(!a)exit(-1);
-    strcpy(a->type,s);
-}
-//it insert a string s in the field fuel of structure a
-void insert_fuel(vehicle *a,char *s){
-    if(!a)exit(-1);
-    strcpy(a->fuel,s);
-}
-//it insert a string s in the field brand of structure a
-void insert_brand(vehicle *a,char *s){
-    if(!a)exit(-1);
-    strcpy(a->brand,s);
-}
-//it insert a string s in the field model of structure a
-void insert_model(vehicle *a,char *s){
-    if(!a)exit(-1);
-    strcpy(a->model,s);
-}
-//it inserts a number n in the field year of the structure a
-void instert_year(vehicle *a,int n){
-    if(!a) extit(-1);
-    a->year=n;
-}
-//makes a new vehicle with inserted datas;
-void make_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year){
-    insert_model(v,model);
-    insert_brand(v,brand);
-    insert_plate(v,plate);
-    insert_fuel(v,fuel);
-    insert_type(v,type);
-    instert_year(v,year);
-    instert_seats(v,seats);
-    define_cost(v);
-    v->booked=false;
-}
-//views a note vehicle with all his fields.
-view_vehicle(*a){
 
-    printf("\n\n\t____________________
-            \n\tplate : %s;
-            \n\thourly cost : %f;
-            \n\tseats number : %d;
-            \n\tfuel : %s;
-            \n\ttype : %s;
-            \n\tbrand : %s;
-            \n\tmodel : %s;
-            \n\tyear : %d;
-            \n\t____________________",a->plate,&a->cost,&a->seats,a->fuel,a->type,a->brand,a->model,&a->year);
+/*
+ * Function: freeVehicle
+ * ---------------------
+ * Frees all memory associated with a Vehicle instance.
+ *
+ * v: pointer to the Vehicle to be freed
+ */
+void freeVehicle(Vehicle* v) {
+    if (!v) return;
+    free(v->plate);
+    free(v->type);
+    free(v->fuel);
+    free(v->brand);
+    free(v->model);
+    free(v->location);
+    free(v);
+}
 
-            
-            
+/*
+ * Function: printVehicle
+ * ----------------------
+ * Displays all the information about a vehicle in a readable format.
+ *
+ * v: pointer to the Vehicle to be printed
+ */
+void printVehicle(const Vehicle* v) {
+    printf("Plate: %s | Type: %s | Brand: %s | Model: %s | Cost: %.2f/h | Seats: %d | Fuel: %s | Year: %d | Location: %s\n",
+           v->plate, v->type, v->brand, v->model, v->cost, v->seats, v->fuel, v->year, v->location);
+}
+
+/*
+ * Function: getVehiclePlate
+ * -------------------------
+ * Returns the license plate of the vehicle.
+ */
+const char* getVehiclePlate(Vehicle* v) { return v->plate; }
+
+/*
+ * Function: getVehicleCost
+ * ------------------------
+ * Returns the hourly rental cost of the vehicle.
+ */
+float getVehicleCost(Vehicle* v) { return v->cost; }
+
+/*
+ * Function: insertVehicle
+ * -----------------------
+ * Inserts a Vehicle into a hash table using its plate as the key.
+ *
+ * table: pointer to the hash table
+ * v: pointer to the Vehicle to insert
+ */
+void insertVehicle(HashTable* table, Vehicle* v) {
+    insertHashTable(table, v->plate, v);
+}
+
+/*
+ * Function: findVehicle
+ * ---------------------
+ * Searches for a vehicle by plate in the hash table.
+ *
+ * table: pointer to the hash table
+ * plate: plate to search
+ *
+ * returns: pointer to the Vehicle if found, NULL otherwise
+ */
+Vehicle* findVehicle(HashTable* table, const char* plate) {
+    return (Vehicle*)searchHashTable(table, plate);
+}
+
+/*
+ * Function: addVehiclePrompt
+ * --------------------------
+ * Admin prompt to collect vehicle data from the user and insert it
+ * into the hash table.
+ */
+void addVehiclePrompt(HashTable* table) {
+    char plate[20], type[20], fuel[20], brand[30], model[30], location[30];
+    float cost;
+    int year, seats;
+
+    printf("Enter plate: "); scanf("%s", plate);
+    printf("Enter cost per hour: "); scanf("%f", &cost);
+    printf("Enter type: "); scanf("%s", type);
+    printf("Enter number of seats: "); scanf("%d", &seats);
+    printf("Enter fuel type: "); scanf("%s", fuel);
+    printf("Enter brand: "); scanf("%s", brand);
+    printf("Enter model: "); scanf("%s", model);
+    printf("Enter year: "); scanf("%d", &year);
+    printf("Enter location: "); scanf("%s", location);
+    getchar(); // Consume leftover newline
+
+    Vehicle* v = createVehicle(plate, cost, seats, type, fuel, brand, model, year, location);
+    insertVehicle(table, v);
+    printf("Vehicle added successfully.\n");
+}
+
+/*
+ * Function: removeVehiclePrompt
+ * -----------------------------
+ * Admin prompt to remove a vehicle from the hash table using its plate.
+ */
+void removeVehiclePrompt(HashTable* table) {
+    char plate[20];
+    printf("Enter plate of vehicle to remove: ");
+    scanf("%s", plate); getchar();
+    deleteHashTable(table, plate);
+    printf("Vehicle removed (if existed).\n");
+}
+
+/*
+ * Function: printAllVehicles
+ * --------------------------
+ * Iterates over the hash table and prints all stored vehicles.
+ */
+void printAllVehicles(HashTable* table) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HashNode* node = table->table[i];
+        while (node) {
+            printVehicle((Vehicle*)node->value);
+            node = node->next;
+        }
+    }
+}
+
+/*
+ * Function: printAvailableVehiclesAt
+ * ----------------------------------
+ * Displays all vehicles available within a given time period.
+ *
+ * table: hash table of all vehicles
+ * bookingList: list of existing bookings
+ * start: start timestamp (in hours)
+ * end: end timestamp (in hours)
+ */
+void printAvailableVehiclesAt(HashTable* table, List bookingList, long start, long end) {
+    printf("\nAvailable vehicles from selected period:\n");
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HashNode* node = table->table[i];
+        while (node) {
+            Vehicle* v = (Vehicle*)node->value;
+            if (isVehicleAvailable(bookingList, v->plate, start, end)) {
+                printVehicle(v);
+            }
+            node = node->next;
+        }
+    }
 }
