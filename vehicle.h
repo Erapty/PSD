@@ -1,11 +1,67 @@
-bool booked(vehicle *a);
-void insert_plate(vehicle *a);
-void define_cost(vehicle *a);
-void instert_seats(vehicle *a,int n);
-void insert_type(vehicle *a,char *s);
-void insert_fuel(vehicle *a,char *s);
-void insert_brand(vehicle *a,char *s);
-void insert_model(vehicle *a,char *s);
-void insert_year(vehicle *a,int n);
-void make_vehicle(vehicle *v,char *plate, int seats,char *type, char *fuel, char *brand, char *model, int year);
-void view_vehicle(vehicle *a);
+#ifndef VEHICLE_H
+#define VEHICLE_H
+
+#include "hash.h"
+#include "list.h"
+
+// Opaque declaration of the Vehicle structure
+typedef struct Vehicle Vehicle;
+
+/*
+ * Creates a new vehicle object with the given parameters.
+ */
+Vehicle* createVehicle(const char* plate, float cost, int seats, const char* type,
+                       const char* fuel, const char* brand, const char* model,
+                       int year, const char* location);
+
+/*
+ * Frees memory allocated for a Vehicle.
+ */
+void freeVehicle(Vehicle* v);
+
+/*
+ * Returns the license plate of the vehicle.
+ */
+const char* getVehiclePlate(Vehicle* v);
+
+/*
+ * Returns the hourly cost of the vehicle.
+ */
+float getVehicleCost(Vehicle* v);
+
+/*
+ * Inserts a vehicle into the hash table.
+ */
+void insertVehicle(HashTable* table, Vehicle* v);
+
+/*
+ * Searches for a vehicle in the hash table by its plate.
+ */
+Vehicle* findVehicle(HashTable* table, const char* plate);
+
+/*
+ * Prompts the admin to input vehicle data and adds it to the system.
+ */
+void addVehiclePrompt(HashTable* table);
+
+/*
+ * Prompts the admin to remove a vehicle from the system.
+ */
+void removeVehiclePrompt(HashTable* table);
+
+/*
+ * Prints the data of a single vehicle.
+ */
+void printVehicle(const Vehicle* v);
+
+/*
+ * Prints all vehicles stored in the system.
+ */
+void printAllVehicles(HashTable* table);
+
+/*
+ * Prints all vehicles available during a specified time range.
+ */
+void printAvailableVehiclesAt(HashTable* table, List bookingList, long start, long end);
+
+#endif
