@@ -1,5 +1,6 @@
 #include <time.h>
 #include <string.h>
+#include <stdio.h>
 #include "timeutils.h"
 
 /*
@@ -22,9 +23,23 @@
  */
 long convertToTimestamp(const char* datetimeStr) {
     struct tm timeStruct = {0};
-    strptime(datetimeStr, "%Y-%m-%d %H", &timeStruct);
+    int year, month, day, hour;
+
+    // Parse the string manually using sscanf (portable across systems)
+    if (sscanf(datetimeStr, "%d-%d-%d %d", &year, &month, &day, &hour) != 4) {
+        return -1; // Invalid format
+    }
+
+    timeStruct.tm_year = year - 1900;
+    timeStruct.tm_mon = month - 1;
+    timeStruct.tm_mday = day;
+    timeStruct.tm_hour = hour;
+    timeStruct.tm_min = 0;
+    timeStruct.tm_sec = 0;
+    timeStruct.tm_isdst = -1;
+
     time_t rawTime = mktime(&timeStruct);
-    return rawTime / 3600;  // return as hour-based timestamp
+    return rawTime;
 }
 
 /*
