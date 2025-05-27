@@ -3,73 +3,61 @@
 #include <stdio.h>
 #include <time.h>
 #include "booking.h"
+#include "timeutils.h"
 
 /*
  * File: booking.c
- * ---------------
- * Handles booking operations for the car sharing system. This includes
- * creating bookings, printing booking details, filtering bookings by user,
- * and interacting with the user to make a booking.
+ * ----------------
+ * Implements the Booking data structure and related operations.
+ * This includes creating bookings, printing, checking availability,
+ * and prompting user input for bookings.
  */
 
-// Internal structure representing a booking
+// Internal structure for a booking
 struct Booking {
     char username[50];
     char plate[20];
-    int startHour;
-    int endHour;
-    int startDay;
-    int endDay;
+    long startTimestamp;
+    long endTimestamp;
     float totalCost;
     int isDiscounted;
 };
 
 /*
- * Function: createBooking
- * -----------------------
- * Allocates and initializes a new Booking instance for a given user and vehicle.
- * It calculates duration, applies discount if applicable, and stores all details.
+ * Creates a new booking with the specified parameters.
  *
- * username: the user making the booking
- * vehicle: the vehicle being booked
- * time: struct containing start/end day and hour
+ * username: user who is making the booking
+ * vehicle: pointer to the booked vehicle
+ * startTimestamp: start time in UNIX hours
+ * durationHours: number of hours the vehicle is booked
  *
- * returns: pointer to the newly created Booking
+ * returns: pointer to a newly allocated Booking
  */
-Booking* createBooking(const char* username, Vehicle* vehicle, BookingTime time) {
+Booking* createBooking(const char* username, Vehicle* vehicle, long startTimestamp, long durationHours) {
     Booking* booking = malloc(sizeof(Booking));
     if (!booking) return NULL;
 
     strncpy(booking->username, username, 50);
     strncpy(booking->plate, getVehiclePlate(vehicle), 20);
-    booking->startDay = time.startDay;
-    booking->endDay = time.endDay;
-    booking->startHour = time.startHour;
-    booking->endHour = time.endHour;
+    booking->startTimestamp = startTimestamp;
+    booking->endTimestamp = startTimestamp + durationHours;
 
-    int duration = (time.endDay - time.startDay) * 24 + (time.endHour - time.startHour);
-    booking->totalCost = duration * getVehicleCost(vehicle);
-    booking->isDiscounted = duration > 20 ? 1 : 0;
+    booking->totalCost = durationHours * getVehicleCost(vehicle);
+    booking->isDiscounted = durationHours > 20 ? 1 : 0;
     if (booking->isDiscounted)
-        booking->totalCost *= 0.85f;  // 15% discount for long rentals
+        booking->totalCost *= 0.85f; // 15% discount
 
     return booking;
 }
 
 /*
- * Function: printBooking
- * ----------------------
- * Displays all relevant information about a booking, including time, cost,
- * and booking status (upcoming, ongoing, past).
- *
- * b: pointer to the Booking to print
+ * Prints the details of a booking, including calculated status.
  */
 void printBooking(const Booking* b) {
     char start[64], end[64];
     timestampToString(b->startTimestamp, start, sizeof(start));
     timestampToString(b->endTimestamp, end, sizeof(end));
 
-    // Get current timestamp in hours
     time_t nowSec = time(NULL);
     long now = nowSec / 3600;
 
@@ -91,11 +79,7 @@ void printBooking(const Booking* b) {
 }
 
 /*
- * Function: printAllBookings
- * --------------------------
- * Iterates through the booking list and prints all bookings.
- *
- * list: the list containing Booking instances
+ * Prints all bookings stored in the given list.
  */
 void printAllBookings(List list) {
     int size = getSize(list);
@@ -106,12 +90,9 @@ void printAllBookings(List list) {
 }
 
 /*
- * Function: printUserBookings
- * ---------------------------
  * Prints all bookings made by a specific user.
  *
- * list: the list containing Booking instances
- * username: the username to filter bookings by
+ * username: username to filter by
  */
 void printUserBookings(List list, const char* username) {
     int size = getSize(list);
@@ -124,34 +105,89 @@ void printUserBookings(List list, const char* username) {
 }
 
 /*
- * Function: createBookingPrompt
- * -----------------------------
- * Prompts the client to input booking details and attempts to create
- * and insert a new booking.
+ * Checks if a vehicle is available for a specific time period.
  *
- * vehicleTable: hash table containing vehicles
- * bookingList: list where the new booking will be stored
- * username: the user making the booking
+ * returns: 1 if available, 0 otherwise
+ */
+int isVehicleAvailable(List list, const char* plate, long start, long end) {
+    int size = getSize(list);
+    for (int i = 0; i < size; i++) {
+        Booking* b = (Booking*)getItem(list, i);
+        if (strcmp(b->plate, plate) == 0) {
+            if (!(end <= b->startTimestamp || start >= b->endTimestamp)) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+/*
+ * Prompts user input to create a booking and stores it in the booking list.
  */
 void createBookingPrompt(HashTable* vehicleTable, List bookingList, const char* username) {
     char plate[20];
-    int startDay, endDay, startHour, endHour;
+    char datetime[64];
+    int duration;
 
-    printf("Enter vehicle plate: "); scanf("%s", plate);
-    printf("Start day (1-7): "); scanf("%d", &startDay);
-    printf("End day (1-7): "); scanf("%d", &endDay);
-    printf("Start hour (0-23): "); scanf("%d", &startHour);
-    printf("End hour (0-23): "); scanf("%d", &endHour);
-    getchar(); // Consume newline
+    printf("Enter vehicle plate: ");
+    scanf("%s", plate);
+    getchar();
 
-    Vehicle* vehicle = findVehicle(vehicleTable, plate);
-    if (!vehicle) {
+    printf("Start date (YYYY-MM-DD HH): ");
+    fgets(datetime, sizeof(datetime), stdin);
+    datetime[strcspn(datetime, "\n")] = 0;
+
+    printf("Duration (hours): ");
+    scanf("%d", &duration); getchar();
+
+    long start = convertToTimestamp(datetime);
+    long end = start + duration * 3600;
+    Vehicle* v = findVehicle(vehicleTable, plate);
+    if (!v) {
         printf("Vehicle not found.\n");
         return;
     }
 
-    BookingTime time = {startHour, endHour, startDay, endDay};
-    Booking* b = createBooking(username, vehicle, time);
-    insertList(bookingList, b);
-    printf("Booking created successfully.\n");
+    if (!isVehicleAvailable(bookingList, plate, start, start + duration)) {
+        printf("This vehicle is not available in the selected period. Try another.\n");
+        return;
+    }
+
+    float cost = duration * getVehicleCost(v);
+    int discounted = 0;
+    if (duration > 20) {
+        cost *= 0.85f;
+        discounted = 1;
+    }
+
+    char endStr[64];
+    timestampToString(end / 3600, endStr, sizeof(endStr));
+
+    printf("\n=== BOOKING SUMMARY ===\n");
+    printf("Vehicle: %s\n", getVehiclePlate(v));
+    printf("Duration: %d hours\n", duration);
+    printf("End date/time: %s\n", endStr);
+    printf("Total cost: %.2f %s\n", cost, discounted ? "(discount applied)" : "(standard rate)");
+
+    printf("\nDo you want to confirm the booking? (y/n): ");
+    char confirm;
+    scanf(" %c", &confirm); getchar();
+
+    if (confirm == 'y' || confirm == 'Y') {
+        Booking* b = createBooking(username, v, start, duration);
+        insertList(bookingList, b);
+        printf("\nBooking created successfully!\n");
+    } else {
+        printf("\nBooking cancelled.\n");
+    }
 }
+
+/* === GETTER IMPLEMENTATIONS === */
+
+const char* getBookingUsername(const Booking* b) { return b->username; }
+const char* getBookingPlate(const Booking* b) { return b->plate; }
+long getBookingStartTimestamp(const Booking* b) { return b->startTimestamp; }
+long getBookingEndTimestamp(const Booking* b) { return b->endTimestamp; }
+float getBookingTotalCost(const Booking* b) { return b->totalCost; }
+int getBookingIsDiscounted(const Booking* b) { return b->isDiscounted; }
