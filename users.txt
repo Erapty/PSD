@@ -1,0 +1,7 @@
+mario_rossi Mario Rossi
+luigi_verdi Luigi Verdi
+giuseppe_santaniello Giuseppe Santaniello
+marco_tucci Marco Tucci
+roberto_pucci Roberto Pucci
+anna_bianchi Anna Bianchi
+
