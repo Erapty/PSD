@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "client.h"
 #include "vehicle.h"
 #include "user.h"
@@ -47,7 +48,7 @@ void clientMenu(HashTable* vehicleTable, HashTable* userTable, List bookingList)
         user = createUser(username, firstName, lastName);
         insertUser(userTable, user);
     } else {
-        printf("Welcome back, %s %s!\n", firstName, lastName);
+        printf("Welcome back, %s %s!\n", getUserFirstName(user), getUserLastName(user));
     }
 
     int choice;
@@ -62,25 +63,21 @@ void clientMenu(HashTable* vehicleTable, HashTable* userTable, List bookingList)
 
         switch (choice) {
             case 1: {
-                // Request availability range
-                char datetime[32];
-                int duration;
-                printf("Enter desired start date (YYYY-MM-DD HH): ");
-                fgets(datetime, sizeof(datetime), stdin);
-                datetime[strcspn(datetime, "\n")] = 0;
-                printf("Enter duration in hours: ");
-                scanf("%d", &duration); getchar();
-
-                long start = convertToTimestamp(datetime);
-                long end = start + duration;
-                printAvailableVehiclesAt(vehicleTable, bookingList, start, end);
+                printf("\n=== AVAILABLE VEHICLES RIGHT NOW ===\n\n");
+                long now = time(NULL) / 3600;
+                printAvailableVehiclesAt(vehicleTable, bookingList, now, now + 1);
+                printf("\n");
                 break;
             }
             case 2:
+                printf("\n=== MAKE A BOOKING ===\n\n");
                 createBookingPrompt(vehicleTable, bookingList, username);
+                printf("\n");
                 break;
             case 3:
+                printf("\n=== YOUR BOOKINGS ===\n\n");
                 printUserBookings(bookingList, username);
+                printf("\n");
                 break;
             case 0:
                 printf("Logging out...\n");
