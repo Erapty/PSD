@@ -11,11 +11,11 @@
  */
 
 // Structure representing a node in a hash table bucket
-struct HashNode {
-    char key[100];
+typedef struct HashNode {
+    char* key;
     void* value;
     struct HashNode* next;
-};
+} HashNode;
 
 // Structure representing the hash table
 struct HashTable {
@@ -67,14 +67,16 @@ HashTable* createHashTable() {
  */
 void insertHashTable(HashTable* ht, const char* key, void* value) {
     unsigned int index = hashFunction(key);
+
     HashNode* node = malloc(sizeof(HashNode));
     if (!node) return;
 
-    strcpy(node->key, key);
+    node->key = strdup(key);  // oppure: my_strdup(key)
     node->value = value;
     node->next = ht->table[index];
     ht->table[index] = node;
 }
+
 
 /*
  * Function: searchHashTable
@@ -137,4 +139,22 @@ void freeHashTable(HashTable* ht) {
         }
     }
     free(ht);
+}
+
+/*
+ * Iterates over each key-value pair in the hash table
+ * and applies a user-provided callback function.
+ *
+ * ht: the hash table
+ * callback: the function to call on each key-value pair
+ * userData: optional pointer passed to the callback
+ */
+ void forEachHash(HashTable* ht, void (*callback)(const char* key, void* value, void* userData), void* userData) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HashNode* node = ht->table[i];
+        while (node) {
+            callback(node->key, node->value, userData);
+            node = node->next;
+        }
+    }
 }
