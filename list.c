@@ -16,7 +16,7 @@ typedef struct Node {
 } Node;
 
 // Structure representing the list itself
-struct List {
+struct ListStruct {
     Node* head;
     int size;
 };
@@ -29,7 +29,7 @@ struct List {
  * returns: pointer to the new List
  */
 List createList() {
-    List list = malloc(sizeof(struct List));
+    List list = malloc(sizeof(struct ListStruct));
     if (!list) return NULL;
     list->head = NULL;
     list->size = 0;
