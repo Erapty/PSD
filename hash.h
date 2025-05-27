@@ -1,60 +1,43 @@
 #ifndef HASH_H
 #define HASH_H
 
-// Number of buckets in the hash table
 #define TABLE_SIZE 101
 
-// Opaque declaration of the HashTable structure
 typedef struct HashTable HashTable;
 
 /*
  * Creates and initializes a new hash table.
- *
- * returns: pointer to the new HashTable
  */
 HashTable* createHashTable();
 
 /*
- * Hash function to compute an index from a string key.
- *
- * key: the input string
- *
- * returns: the corresponding index in the hash table
- */
-unsigned int hashFunction(const char* key);
-
-/*
  * Inserts a key-value pair into the hash table.
- *
- * ht: pointer to the hash table
- * key: the string key
- * value: generic pointer to the value
  */
-void insertHashTable(HashTable* ht, const char* key, void* value);
+void insertHashTable(HashTable* table, const char* key, void* value);
 
 /*
- * Searches for a value in the hash table using the given key.
- *
- * ht: pointer to the hash table
- * key: the string key to search for
- *
- * returns: pointer to the value if found, NULL otherwise
+ * Searches for a value by its key in the hash table.
  */
-void* searchHashTable(HashTable* ht, const char* key);
+void* searchHashTable(HashTable* table, const char* key);
 
 /*
- * Deletes a key-value pair from the hash table.
- *
- * ht: pointer to the hash table
- * key: the string key to delete
+ * Deletes a key and its associated value from the hash table.
  */
-void deleteHashTable(HashTable* ht, const char* key);
+void deleteHashTable(HashTable* table, const char* key);
 
 /*
- * Frees all memory associated with the hash table.
+ * Frees the memory used by the hash table.
+ */
+void freeHashTable(HashTable* table);
+
+/*
+ * Iterates over all key-value pairs in the hash table,
+ * calling the provided callback on each.
  *
  * ht: pointer to the hash table
+ * callback: function to be called for each pair
+ * userData: additional data passed to the callback
  */
-void freeHashTable(HashTable* ht);
+void forEachHash(HashTable* ht, void (*callback)(const char* key, void* value, void* userData), void* userData);
 
 #endif
