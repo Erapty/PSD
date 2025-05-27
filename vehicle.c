@@ -3,18 +3,17 @@
 #include <string.h>
 #include "vehicle.h"
 #include "hash.h"
-#include "list.h"
 #include "booking.h"
 
 /*
  * File: vehicle.c
- * ----------------
- * Contains functions for creating, managing, and displaying vehicle records
- * used in the car sharing system. Vehicles are stored in a hash table and 
- * can be inserted, retrieved, listed, and filtered based on availability.
+ * ---------------
+ * Implements the Vehicle data structure and related operations,
+ * including creation, insertion into hash tables, printing,
+ * and availability checks.
  */
 
-// Internal structure of Vehicle
+// Internal structure of a Vehicle
 struct Vehicle {
     char* plate;
     float cost;
@@ -27,47 +26,47 @@ struct Vehicle {
     char* location;
 };
 
+char* my_strdup(const char* src) {
+    if (!src) return NULL;
+    size_t len = strlen(src) + 1;
+    char* dst = malloc(len);
+    if (dst) {
+        memcpy(dst, src, len);
+    }
+    return dst;
+}
+
 /*
- * Function: createVehicle
- * -----------------------
- * Allocates and initializes a new vehicle instance with the given parameters.
+ * Creates a new Vehicle instance with the provided information.
  *
- * plate: license plate of the vehicle
- * cost: hourly rental cost
- * seats: number of seats in the vehicle
- * type: vehicle type (e.g., car, van)
- * fuel: fuel type (e.g., petrol, diesel)
- * brand: brand of the vehicle
- * model: model of the vehicle
- * year: manufacturing year
- * location: location of the vehicle
- *
- * returns: pointer to the newly created Vehicle object
+ * returns: pointer to the new Vehicle
  */
-Vehicle* createVehicle(const char* plate, float cost, int seats, const char* type,
-                       const char* fuel, const char* brand, const char* model,
-                       int year, const char* location) {
-    Vehicle* v = malloc(sizeof(Vehicle));
+ Vehicle* createVehicle(const char* plate, float cost, int seats, const char* type,
+    const char* fuel, const char* brand, const char* model,
+    int year, const char* location) {
+    Vehicle* v = malloc(sizeof(struct Vehicle));
     if (!v) return NULL;
 
     v->plate = strdup(plate);
-    v->cost = cost;
-    v->seats = seats;
     v->type = strdup(type);
     v->fuel = strdup(fuel);
     v->brand = strdup(brand);
     v->model = strdup(model);
-    v->year = year;
     v->location = strdup(location);
+
+    v->cost = cost;
+    v->seats = seats;
+    v->year = year;
+
     return v;
 }
 
+
+
+
+
 /*
- * Function: freeVehicle
- * ---------------------
- * Frees all memory associated with a Vehicle instance.
- *
- * v: pointer to the Vehicle to be freed
+ * Frees all memory allocated for a Vehicle instance.
  */
 void freeVehicle(Vehicle* v) {
     if (!v) return;
@@ -80,51 +79,27 @@ void freeVehicle(Vehicle* v) {
     free(v);
 }
 
-/*
- * Function: printVehicle
- * ----------------------
- * Displays all the information about a vehicle in a readable format.
- *
- * v: pointer to the Vehicle to be printed
- */
-void printVehicle(const Vehicle* v) {
-    printf("Plate: %s | Type: %s | Brand: %s | Model: %s | Cost: %.2f/h | Seats: %d | Fuel: %s | Year: %d | Location: %s\n",
-           v->plate, v->type, v->brand, v->model, v->cost, v->seats, v->fuel, v->year, v->location);
-}
+/* === GETTERS === */
+
+const char* getVehiclePlate(const Vehicle* v) { return v->plate; }
+float getVehicleCost(const Vehicle* v) { return v->cost; }
+int getVehicleSeats(const Vehicle* v) { return v->seats; }
+const char* getVehicleType(const Vehicle* v) { return v->type; }
+const char* getVehicleFuel(const Vehicle* v) { return v->fuel; }
+const char* getVehicleBrand(const Vehicle* v) { return v->brand; }
+const char* getVehicleModel(const Vehicle* v) { return v->model; }
+int getVehicleYear(const Vehicle* v) { return v->year; }
+const char* getVehicleLocation(const Vehicle* v) { return v->location; }
 
 /*
- * Function: getVehiclePlate
- * -------------------------
- * Returns the license plate of the vehicle.
- */
-const char* getVehiclePlate(Vehicle* v) { return v->plate; }
-
-/*
- * Function: getVehicleCost
- * ------------------------
- * Returns the hourly rental cost of the vehicle.
- */
-float getVehicleCost(Vehicle* v) { return v->cost; }
-
-/*
- * Function: insertVehicle
- * -----------------------
- * Inserts a Vehicle into a hash table using its plate as the key.
- *
- * table: pointer to the hash table
- * v: pointer to the Vehicle to insert
+ * Inserts a Vehicle into a hash table using the plate as key.
  */
 void insertVehicle(HashTable* table, Vehicle* v) {
     insertHashTable(table, v->plate, v);
 }
 
 /*
- * Function: findVehicle
- * ---------------------
- * Searches for a vehicle by plate in the hash table.
- *
- * table: pointer to the hash table
- * plate: plate to search
+ * Finds a Vehicle in the hash table by its plate.
  *
  * returns: pointer to the Vehicle if found, NULL otherwise
  */
@@ -133,10 +108,7 @@ Vehicle* findVehicle(HashTable* table, const char* plate) {
 }
 
 /*
- * Function: addVehiclePrompt
- * --------------------------
- * Admin prompt to collect vehicle data from the user and insert it
- * into the hash table.
+ * Prompts admin to enter vehicle details and adds it to the hash table.
  */
 void addVehiclePrompt(HashTable* table) {
     char plate[20], type[20], fuel[20], brand[30], model[30], location[30];
@@ -152,7 +124,7 @@ void addVehiclePrompt(HashTable* table) {
     printf("Enter model: "); scanf("%s", model);
     printf("Enter year: "); scanf("%d", &year);
     printf("Enter location: "); scanf("%s", location);
-    getchar(); // Consume leftover newline
+    getchar(); // Consume newline
 
     Vehicle* v = createVehicle(plate, cost, seats, type, fuel, brand, model, year, location);
     insertVehicle(table, v);
@@ -160,9 +132,7 @@ void addVehiclePrompt(HashTable* table) {
 }
 
 /*
- * Function: removeVehiclePrompt
- * -----------------------------
- * Admin prompt to remove a vehicle from the hash table using its plate.
+ * Prompts admin to remove a vehicle from the hash table using its plate.
  */
 void removeVehiclePrompt(HashTable* table) {
     char plate[20];
@@ -173,40 +143,51 @@ void removeVehiclePrompt(HashTable* table) {
 }
 
 /*
- * Function: printAllVehicles
- * --------------------------
- * Iterates over the hash table and prints all stored vehicles.
+ * Prints all details of a single Vehicle.
+ */
+void printVehicle(const Vehicle* v) {
+    printf("Plate: %s | Type: %s | Brand: %s | Model: %s | Cost: %.2f/h | Seats: %d | Fuel: %s | Year: %d | Location: %s\n",
+           v->plate, v->type, v->brand, v->model, v->cost, v->seats, v->fuel, v->year, v->location);
+}
+
+/*
+ * Callback used by forEachHash to print each vehicle in the table.
+ */
+void vehiclePrinter(const char* key, void* value, void* unused) {
+    Vehicle* v = (Vehicle*)value;
+    printVehicle(v);
+}
+
+/*
+ * Iterates through the vehicle table and prints all vehicles.
  */
 void printAllVehicles(HashTable* table) {
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        HashNode* node = table->table[i];
-        while (node) {
-            printVehicle((Vehicle*)node->value);
-            node = node->next;
-        }
+    forEachHash(table, vehiclePrinter, NULL);
+}
+
+/*
+ * Callback used to print only available vehicles for a given time interval.
+ */
+struct AvailabilityData {
+    List bookingList;
+    long start;
+    long end;
+};
+
+void availableVehiclePrinter(const char* key, void* value, void* userData) {
+    Vehicle* v = (Vehicle*)value;
+    struct AvailabilityData* data = (struct AvailabilityData*)userData;
+
+    if (isVehicleAvailable(data->bookingList, v->plate, data->start, data->end)) {
+        printVehicle(v);
     }
 }
 
 /*
- * Function: printAvailableVehiclesAt
- * ----------------------------------
- * Displays all vehicles available within a given time period.
- *
- * table: hash table of all vehicles
- * bookingList: list of existing bookings
- * start: start timestamp (in hours)
- * end: end timestamp (in hours)
+ * Prints all vehicles that are available between the given start and end timestamps.
  */
 void printAvailableVehiclesAt(HashTable* table, List bookingList, long start, long end) {
     printf("\nAvailable vehicles from selected period:\n");
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        HashNode* node = table->table[i];
-        while (node) {
-            Vehicle* v = (Vehicle*)node->value;
-            if (isVehicleAvailable(bookingList, v->plate, start, end)) {
-                printVehicle(v);
-            }
-            node = node->next;
-        }
-    }
+    struct AvailabilityData data = { bookingList, start, end };
+    forEachHash(table, availableVehiclePrinter, &data);
 }
