@@ -24,40 +24,68 @@
  * userTable: hash table containing all users
  * bookingList: list of all bookings
  */
-void adminMenu(HashTable* vehicleTable, HashTable* userTable, List bookingList) {
+ void adminMenu(HashTable* vehicleTable, HashTable* userTable, List bookingList) {
     int choice;
     do {
-        printf("\n=== ADMIN MENU ===\n");
-        printf("1. Add vehicle\n");
-        printf("2. Remove vehicle\n");
+        printf("\n=== ADMIN MENU ===\n\n");
+        printf("1. Add a new vehicle\n");
+        printf("2. Remove a vehicle\n");
         printf("3. View all vehicles\n");
         printf("4. View all users\n");
         printf("5. View all bookings\n");
-        printf("0. Log out\n");
+        printf("0. Exit admin mode\n\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice); getchar(); // Consume newline
+        scanf("%d", &choice); getchar();
 
         switch (choice) {
-            case 1: 
-                addVehiclePrompt(vehicleTable); 
+            case 1:
+                printf("\n--- ADD VEHICLE ---\n\n");
+                addVehiclePrompt(vehicleTable);
+                printf("\n");
                 break;
-            case 2: 
-                removeVehiclePrompt(vehicleTable); 
+
+            case 2:
+                printf("\n--- REMOVE VEHICLE ---\n\n");
+                removeVehiclePrompt(vehicleTable);
+                printf("\n");
                 break;
-            case 3: 
-                printAllVehicles(vehicleTable); 
+
+            case 3:
+                printf("\n--- ALL VEHICLES ---\n\n");
+                if (vehicleTable) {
+                    printAllVehicles(vehicleTable);
+                } else {
+                    printf("No vehicles found.\n");
+                }
+                printf("\n");
                 break;
-            case 4: 
-                printAllUsers(userTable); 
+
+            case 4:
+                printf("\n--- ALL USERS ---\n\n");
+                if (userTable) {
+                    printAllUsers(userTable);
+                } else {
+                    printf("No users found.\n");
+                }
+                printf("\n");
                 break;
-            case 5: 
-                printAllBookings(bookingList); 
+
+            case 5:
+                printf("\n--- ALL BOOKINGS ---\n\n");
+                if (getSize(bookingList) > 0) {
+                    printAllBookings(bookingList);
+                } else {
+                    printf("No bookings found.\n");
+                }
+                printf("\n");
                 break;
-            case 0: 
-                printf("Logging out...\n"); 
+
+            case 0:
+                printf("\nExiting admin mode...\n\n");
                 break;
-            default: 
-                printf("Invalid choice. Please try again.\n");
+
+            default:
+                printf("\nInvalid choice. Please try again.\n\n");
         }
 
     } while (choice != 0);
