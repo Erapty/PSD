@@ -7,11 +7,11 @@
 /*
  * File: user.c
  * ------------
- * Manages user-related operations in the car sharing system.
- * Handles creation, lookup, insertion, and display of user records.
+ * Implements the User data structure and related operations.
+ * Includes creation, accessors (getters), and interaction with a hash table.
  */
 
-// Internal structure representing a user
+// Internal structure of a User
 struct User {
     char* username;
     char* firstName;
@@ -19,9 +19,7 @@ struct User {
 };
 
 /*
- * Function: createUser
- * --------------------
- * Allocates and initializes a new User instance with the given data.
+ * Allocates and initializes a new User with the given data.
  *
  * username: unique identifier for the user
  * firstName: user's first name
@@ -40,11 +38,7 @@ User* createUser(const char* username, const char* firstName, const char* lastNa
 }
 
 /*
- * Function: freeUser
- * ------------------
- * Frees all memory allocated for a User instance.
- *
- * user: pointer to the User to be freed
+ * Frees the memory allocated for a User instance.
  */
 void freeUser(User* user) {
     if (!user) return;
@@ -54,16 +48,34 @@ void freeUser(User* user) {
     free(user);
 }
 
+/* === GETTER FUNCTIONS === */
+
 /*
- * Function: generateUsername
- * --------------------------
- * Generates a simple username by concatenating first and last name
- * with an underscore. Memory must be freed by the caller.
+ * Returns the user's username.
+ */
+const char* getUserUsername(const User* user) {
+    return user->username;
+}
+
+/*
+ * Returns the user's first name.
+ */
+const char* getUserFirstName(const User* user) {
+    return user->firstName;
+}
+
+/*
+ * Returns the user's last name.
+ */
+const char* getUserLastName(const User* user) {
+    return user->lastName;
+}
+
+/*
+ * Generates a username by combining first name and last name with an underscore.
+ * Memory must be freed by the caller.
  *
- * firstName: user's first name
- * lastName: user's last name
- *
- * returns: dynamically allocated string representing the username
+ * returns: dynamically allocated username string
  */
 char* generateUsername(const char* firstName, const char* lastName) {
     char* username = malloc(100);
@@ -72,55 +84,36 @@ char* generateUsername(const char* firstName, const char* lastName) {
 }
 
 /*
- * Function: insertUser
- * --------------------
- * Inserts a User into the user hash table using their username as the key.
- *
- * table: hash table where the user will be stored
- * user: pointer to the User to insert
+ * Inserts a User into the given hash table using the username as key.
  */
 void insertUser(HashTable* table, User* user) {
     insertHashTable(table, user->username, user);
 }
 
 /*
- * Function: findUser
- * ------------------
- * Retrieves a User from the hash table by their username.
+ * Finds a user in the hash table by username.
  *
- * table: hash table to search in
- * username: the username to look up
- *
- * returns: pointer to the User if found, NULL otherwise
+ * returns: pointer to User if found, NULL otherwise
  */
 User* findUser(HashTable* table, const char* username) {
     return (User*)searchHashTable(table, username);
 }
 
+void userPrinter(const char* key, void* value, void* unused) {
+    User* u = (User*)value;
+    printUser(u);
+}
+
 /*
- * Function: printUser
- * -------------------
- * Prints the basic information of a single user.
- *
- * user: pointer to the User to display
+ * Prints the details of a single user.
  */
 void printUser(const User* user) {
     printf("Username: %s | Name: %s %s\n", user->username, user->firstName, user->lastName);
 }
 
 /*
- * Function: printAllUsers
- * -----------------------
- * Iterates through the user hash table and prints all registered users.
- *
- * table: hash table containing user data
+ * Prints all users stored in the hash table.
  */
 void printAllUsers(HashTable* table) {
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        HashNode* node = table->table[i];
-        while (node) {
-            printUser((User*)node->value);
-            node = node->next;
-        }
-    }
+    forEachHash(table, userPrinter, NULL);
 }
