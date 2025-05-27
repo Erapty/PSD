@@ -1,5 +1,0 @@
-AB123CD 10.5 citycar 4 petrol Fiat 500 2018 Napoli
-EF456GH 15.0 suv 5 diesel Jeep Renegade 2020 Salerno
-IJ789KL 8.0 compact 4 electric Nissan Leaf 2021 Napoli
-MN012OP 20.0 van 8 diesel Ford Transit 2019 Avellino
-QR345ST 12.5 citycar 4 hybrid Toyota Yaris 2022 Caserta
