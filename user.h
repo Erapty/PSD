@@ -6,10 +6,12 @@
 // Opaque declaration of the User structure
 typedef struct User User;
 
+/* === Creation & Management === */
+
 /*
- * Creates a new User instance with the provided username, first name, and last name.
+ * Creates a new User object.
  *
- * username: unique identifier for the user
+ * username: unique identifier
  * firstName: user's first name
  * lastName: user's last name
  *
@@ -18,52 +20,58 @@ typedef struct User User;
 User* createUser(const char* username, const char* firstName, const char* lastName);
 
 /*
- * Frees memory allocated for a User instance.
- *
- * user: pointer to the User to free
+ * Frees memory allocated for a User.
  */
 void freeUser(User* user);
 
+/* === Accessors (Getters) === */
+
 /*
- * Generates a username from a user's first and last name.
- * Format: first_last. Memory must be freed by the caller.
- *
- * firstName: user's first name
- * lastName: user's last name
- *
- * returns: dynamically allocated string containing the username
+ * Returns the username of the user.
+ */
+const char* getUserUsername(const User* user);
+
+/*
+ * Returns the first name of the user.
+ */
+const char* getUserFirstName(const User* user);
+
+/*
+ * Returns the last name of the user.
+ */
+const char* getUserLastName(const User* user);
+
+/* === Username Utility === */
+
+/*
+ * Generates a simple username in the format "first_last".
+ * The returned string must be freed by the caller.
  */
 char* generateUsername(const char* firstName, const char* lastName);
 
+/* === Hash Table Operations === */
+
 /*
- * Inserts a User into the hash table using the username as the key.
- *
- * table: hash table where the user will be inserted
- * user: pointer to the User to insert
+ * Inserts a User into a hash table.
  */
 void insertUser(HashTable* table, User* user);
 
 /*
- * Searches for a user in the hash table by username.
- *
- * table: hash table to search in
- * username: the username to find
+ * Searches for a User in the hash table by username.
  *
  * returns: pointer to the User if found, NULL otherwise
  */
 User* findUser(HashTable* table, const char* username);
 
+/* === Debug / Admin Output === */
+
 /*
- * Prints the details of a single user.
- *
- * user: pointer to the User to print
+ * Prints information about a single user.
  */
 void printUser(const User* user);
 
 /*
  * Prints all users stored in the hash table.
- *
- * table: hash table containing users
  */
 void printAllUsers(HashTable* table);
 
