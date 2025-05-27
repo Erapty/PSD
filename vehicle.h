@@ -5,62 +5,84 @@
 #include "list.h"
 
 // Opaque declaration of the Vehicle structure
-typedef struct Vehicle Vehicle;
+typedef struct Vehicle Vehicle; 
 
 /*
- * Creates a new vehicle object with the given parameters.
+ * Creates a new Vehicle instance with all necessary fields.
+ *
+ * plate: vehicle license plate
+ * cost: hourly rental cost
+ * seats: number of seats
+ * type: type of vehicle (e.g., car, van)
+ * fuel: fuel type (e.g., petrol, diesel)
+ * brand: manufacturer brand
+ * model: specific model name
+ * year: year of manufacture
+ * location: city or place where the vehicle is located
+ *
+ * returns: pointer to the new Vehicle
  */
 Vehicle* createVehicle(const char* plate, float cost, int seats, const char* type,
                        const char* fuel, const char* brand, const char* model,
                        int year, const char* location);
 
 /*
- * Frees memory allocated for a Vehicle.
+ * Frees all memory associated with a Vehicle object.
  */
 void freeVehicle(Vehicle* v);
 
-/*
- * Returns the license plate of the vehicle.
- */
-const char* getVehiclePlate(Vehicle* v);
+/* === Accessors (Getters) === */
+
+const char* getVehiclePlate(const Vehicle* v);
+float getVehicleCost(const Vehicle* v);
+int getVehicleSeats(const Vehicle* v);
+const char* getVehicleType(const Vehicle* v);
+const char* getVehicleFuel(const Vehicle* v);
+const char* getVehicleBrand(const Vehicle* v);
+const char* getVehicleModel(const Vehicle* v);
+int getVehicleYear(const Vehicle* v);
+const char* getVehicleLocation(const Vehicle* v);
+
+/* === Hash Table Operations === */
 
 /*
- * Returns the hourly cost of the vehicle.
- */
-float getVehicleCost(Vehicle* v);
-
-/*
- * Inserts a vehicle into the hash table.
+ * Inserts a Vehicle into the hash table.
  */
 void insertVehicle(HashTable* table, Vehicle* v);
 
 /*
- * Searches for a vehicle in the hash table by its plate.
+ * Searches for a Vehicle in the hash table by plate.
+ *
+ * returns: pointer to the Vehicle if found, NULL otherwise
  */
 Vehicle* findVehicle(HashTable* table, const char* plate);
 
+/* === Admin Prompts === */
+
 /*
- * Prompts the admin to input vehicle data and adds it to the system.
+ * Prompts admin to input vehicle details and inserts it into the table.
  */
 void addVehiclePrompt(HashTable* table);
 
 /*
- * Prompts the admin to remove a vehicle from the system.
+ * Prompts admin to remove a vehicle from the table using its plate.
  */
 void removeVehiclePrompt(HashTable* table);
 
+/* === Display Functions === */
+
 /*
- * Prints the data of a single vehicle.
+ * Prints all details of a single vehicle.
  */
 void printVehicle(const Vehicle* v);
 
 /*
- * Prints all vehicles stored in the system.
+ * Prints all vehicles stored in the hash table.
  */
 void printAllVehicles(HashTable* table);
 
 /*
- * Prints all vehicles available during a specified time range.
+ * Prints only vehicles that are available during a given time range.
  */
 void printAvailableVehiclesAt(HashTable* table, List bookingList, long start, long end);
 
