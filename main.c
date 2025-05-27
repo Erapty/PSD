@@ -19,21 +19,23 @@
  */
 
 int main() {
+    
     // Initialize data structures
     HashTable* vehicleTable = createHashTable();
     HashTable* userTable = createHashTable();
     List bookingList = createList();
 
+    
     // Load data from files
     LoadVehiclesFromFile(vehicleTable, "vehicles.txt");
     LoadUsersFromFile(userTable, "users.txt");
     LoadBookingsFromFile(bookingList, "bookings.txt", vehicleTable, userTable);
-
+    
     int choice;
-    bool running = true;
+    
 
     // Main program loop
-    while (running) {
+   do {
         printf("Welcome to the Car Sharing System\n");
         printf("1. Admin Login\n");
         printf("2. Client Login\n");
@@ -54,12 +56,12 @@ int main() {
                 SaveVehiclesToFile(vehicleTable, "vehicles.txt");
                 SaveUsersToFile(userTable, "users.txt");
                 SaveBookingsToFile(bookingList, "bookings.txt");
-                running = false;
+                choice = 0;
                 break;
             default:
                 printf("Invalid choice. Try again.\n");
         }
-    }
+    }while (choice != 0);
 
     // Free memory
     freeHashTable(vehicleTable);
