@@ -73,7 +73,7 @@ void LoadUsersFromFile(HashTable* table, const char* filename) {
  * vehicleTable: hash table used to retrieve vehicles by plate
  * userTable: hash table used to validate users (optional)
  */
-void LoadBookingsFromFile(List list, const char* filename, HashTable* vehicleTable, HashTable* userTable) {
+ void LoadBookingsFromFile(List list, const char* filename, HashTable* vehicleTable, HashTable* userTable) {
     FILE* file = fopen(filename, "r");
     if (!file) return;
 
@@ -87,12 +87,16 @@ void LoadBookingsFromFile(List list, const char* filename, HashTable* vehicleTab
         Vehicle* v = findVehicle(vehicleTable, plate);
         if (v) {
             Booking* b = createBooking(username, v, start, end - start);
+            setBookingCost(b, cost);
+            setBookingDiscounted(b, discounted);
             insertList(list, b);
+
         }
     }
 
     fclose(file);
 }
+
 
 
 /*
