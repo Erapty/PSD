@@ -99,21 +99,16 @@ User* findUser(HashTable* table, const char* username) {
     return (User*)searchHashTable(table, username);
 }
 
-void userPrinter(const char* key, void* value, void* unused) {
-    User* u = (User*)value;
-    printUser(u);
-}
-
-/*
- * Prints the details of a single user.
- */
-void printUser(const User* user) {
-    printf("Username: %s | Name: %s %s\n", user->username, user->firstName, user->lastName);
-}
-
 /*
  * Prints all users stored in the hash table.
  */
+// Static callback used to print each user
+static void userPrinter(const char* key, void* value, void* unused) {
+    User* u = (User*)value;
+    printf("Username: %s | Name: %s %s\n", getUserUsername(u), getUserFirstName(u), getUserLastName(u));
+}
+
 void printAllUsers(HashTable* table) {
     forEachHash(table, userPrinter, NULL);
 }
+
