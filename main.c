@@ -36,11 +36,11 @@ int main() {
 
     // Main program loop
    do {
-        printf("Welcome to the Car Sharing System\n");
-        printf("1. Admin Login\n");
-        printf("2. Client Login\n");
-        printf("0. Exit\n");
-        printf("Enter your choice: ");
+        printf("\n===Welcome to the Car Sharing System===\n\n");
+        printf("\t1. Admin Login\n");
+        printf("\t2. Client Login\n");
+        printf("\t0. Exit\n");
+        printf("\tEnter your choice: ");
         scanf("%d", &choice);
         getchar(); // flush newline
 
