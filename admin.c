@@ -16,7 +16,7 @@
 /*
  * Function: adminMenu
  * -------------------
- * Displays the admin menu and handles user input to manage the system.
+ * Displays the admin menu.
  * Allows the admin to add or remove vehicles, view all vehicles, users,
  * and bookings.
  *
