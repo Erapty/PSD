@@ -38,16 +38,10 @@ void printAllBookings(List list);
 void printUserBookings(List list, const char* username);
 
 /*
- * Checks whether a vehicle is available in a given time interval.
- *
- * list: list of all bookings
- * plate: vehicle plate to check
- * start: starting timestamp (in hours)
- * end: ending timestamp (in hours)
- *
- * returns: 1 if available, 0 if occupied
- */
-int isVehicleAvailable(List list, const char* plate, long start, long end);
+* Returns true if the vehicle is available in the given time window
+*/
+bool isVehicleAvailable(List bookings, const char* plate, long start, long end);
+
 
 /*
  * Prompts user input to create and store a booking in the system.
@@ -75,5 +69,13 @@ float getBookingTotalCost(const Booking* b);
 
 // Returns whether the booking received a discount
 int getBookingIsDiscounted(const Booking* b);
+
+
+/* === SETTER FUNCTIONS ===
+ * Used to modify private fields while maintaining encapsulation.
+ */ 
+void setBookingCost(Booking* b, float cost);
+void setBookingDiscounted(Booking* b, int discounted);
+
 
 #endif
