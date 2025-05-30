@@ -41,7 +41,7 @@ char* my_strdup(const char* src) {
  *
  * returns: pointer to the new Vehicle
  */
- Vehicle* createVehicle(const char* plate, float cost, int seats, const char* type,
+Vehicle* createVehicle(const char* plate, float cost, int seats, const char* type,
     const char* fuel, const char* brand, const char* model,
     int year, const char* location) {
     Vehicle* v = malloc(sizeof(struct Vehicle));
@@ -60,10 +60,6 @@ char* my_strdup(const char* src) {
 
     return v;
 }
-
-
-
-
 
 /*
  * Frees all memory allocated for a Vehicle instance.
@@ -174,6 +170,9 @@ struct AvailabilityData {
     long end;
 };
 
+/*
+ * Printer function for available vehicles.
+ */
 void availableVehiclePrinter(const char* key, void* value, void* userData) {
     Vehicle* v = (Vehicle*)value;
     struct AvailabilityData* data = (struct AvailabilityData*)userData;

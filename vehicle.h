@@ -3,6 +3,7 @@
 
 #include "hash.h"
 #include "list.h"
+#include <stdbool.h>
 
 // Opaque declaration of the Vehicle structure
 typedef struct Vehicle Vehicle; 
