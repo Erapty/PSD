@@ -6,8 +6,8 @@
 /*
  * File: timeutils.c
  * -----------------
- * Provides utility functions for converting between human-readable
- * date-time strings and UNIX timestamps (in hours).
+ * Provides utility functions for converting between
+ * date-time strings and UNIX timestamps (in seconds).
  * These functions are used for handling booking time periods.
  */
 
@@ -15,11 +15,11 @@
  * Function: convertToTimestamp
  * ----------------------------
  * Converts a date-time string in the format "YYYY-MM-DD HH"
- * into a UNIX timestamp expressed in hours since epoch.
+ * into a UNIX timestamp expressed in seconds since epoch.
  *
  * datetimeStr: input string in the specified format
  *
- * returns: timestamp in hours (long integer)
+ * returns: timestamp in seconds (long integer)
  */
 long convertToTimestamp(const char* datetimeStr) {
     struct tm timeStruct = {0};
@@ -38,22 +38,21 @@ long convertToTimestamp(const char* datetimeStr) {
     timeStruct.tm_sec = 0;
     timeStruct.tm_isdst = -1;
 
-    time_t rawTime = mktime(&timeStruct);
-    return rawTime;
+    return mktime(&timeStruct);
 }
 
 /*
  * Function: timestampToString
  * ---------------------------
- * Converts a timestamp expressed in hours since epoch into a human-readable
+ * Converts a timestamp expressed in seconds since epoch into
  * date-time string, using the format "YYYY-MM-DD HH:MM".
  *
- * timestamp: input timestamp in hours
+ * timestamp: input timestamp in seconds
  * buffer: output buffer to write the string into
  * size: size of the buffer
  */
 void timestampToString(long timestamp, char* buffer, size_t size) {
-    time_t rawTime = timestamp * 3600;
+    time_t rawTime = timestamp;
     struct tm* timeStruct = localtime(&rawTime);
     strftime(buffer, size, "%Y-%m-%d %H:%M", timeStruct);
 }
