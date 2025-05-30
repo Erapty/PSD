@@ -12,14 +12,17 @@ typedef struct ListStruct* List;
 List createList();
 
 /*
- * Inserts a new item at the beginning of the list.
+ * Inserts a new item at the end of the list.
  *
  * list: pointer to the list
  * data: generic pointer to the item to insert
  *
- * returns: 0 on success, -1 on allocation failure
+ * This function allocates memory for a new node and appends it
+ * at the tail of the singly linked list. The list preserves insertion order.
+ *
+ * returns: void
  */
-int insertList(List list, void* data);
+void insertList(List list, void* data);
 
 /*
  * Retrieves an item from the list at the specified index.
@@ -46,5 +49,11 @@ int getSize(List list);
  * list: pointer to the list
  */
 void freeList(List list);
+
+/*
+ *Accessor to get the head of the list
+*/
+void* getListHead(List list);
+
 
 #endif

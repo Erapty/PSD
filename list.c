@@ -37,24 +37,34 @@ List createList() {
 }
 
 /*
- * Function: insertList
- * --------------------
- * Inserts an item at the beginning of the list.
+ * Inserts a new item at the end of the list.
  *
  * list: pointer to the list
- * item: pointer to the data to be inserted
+ * data: generic pointer to the item to insert
  *
- * returns: 0 on success, -1 on memory allocation failure
+ * This function allocates memory for a new node and appends it
+ * at the tail of the singly linked list. The list preserves insertion order.
+ *
+ * returns: void
  */
-int insertList(List list, void* item) {
-    Node* node = malloc(sizeof(Node));
-    if (!node) return -1;
-    node->data = item;
-    node->next = list->head;
-    list->head = node;
+
+void insertList(List list, void* item) {
+    Node* n = malloc(sizeof(Node));
+    n->data = item;
+    n->next = NULL;
+
+    if (list->head == NULL) {
+        list->head = n;
+    } else {
+        Node* current = list->head;
+        while (current->next != NULL)
+            current = current->next;
+        current->next = n;
+    }
+
     list->size++;
-    return 0;
 }
+
 
 /*
  * Function: getItem
@@ -101,4 +111,14 @@ void freeList(List list) {
         free(temp);
     }
     free(list);
+}
+
+
+
+/*
+ *Accessor to get the head of the list
+*/
+void* getListHead(List list) {
+    return (void*)list->head;
+
 }
