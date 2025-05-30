@@ -31,7 +31,7 @@ void clientMenu(HashTable* vehicleTable, HashTable* userTable, List bookingList)
     char firstName[50], lastName[50];
 
     // Client login
-    printf("\n=== CLIENT LOGIN ===\n");
+    printf("\n\t=== CLIENT LOGIN ===\n");
     printf("Enter your first name: ");
     fgets(firstName, sizeof(firstName), stdin);
     strtok(firstName, "\n");  // Remove newline
@@ -53,37 +53,37 @@ void clientMenu(HashTable* vehicleTable, HashTable* userTable, List bookingList)
 
     int choice;
     do {
-        printf("\n=== CLIENT MENU ===\n");
-        printf("1. View available vehicles\n");
-        printf("2. Make a booking\n");
-        printf("3. View your bookings\n");
-        printf("0. Log out\n");
-        printf("Enter your choice: ");
+        printf("\n\t=== CLIENT MENU ===\n");
+        printf("\t1. View available vehicles\n");
+        printf("\t2. Make a booking\n");
+        printf("\t3. View your bookings\n");
+        printf("\t0. Log out\n");
+        printf("\tEnter your choice: ");
         scanf("%d", &choice); getchar();  // Flush newline
 
         switch (choice) {
             case 1: {
                 printf("\n=== AVAILABLE VEHICLES RIGHT NOW ===\n\n");
-                long now = time(NULL) / 3600;
-                printAvailableVehiclesAt(vehicleTable, bookingList, now, now + 1);
+                long now = time(NULL);
+                printAvailableVehiclesAt(vehicleTable, bookingList, now, now + 3600);
                 printf("\n");
                 break;
             }
             case 2:
-                printf("\n=== MAKE A BOOKING ===\n\n");
+                printf("\n\t=== MAKE A BOOKING ===\n\n");
                 createBookingPrompt(vehicleTable, bookingList, username);
                 printf("\n");
                 break;
             case 3:
-                printf("\n=== YOUR BOOKINGS ===\n\n");
+                printf("\n\t=== YOUR BOOKINGS ===\n\n");
                 printUserBookings(bookingList, username);
                 printf("\n");
                 break;
             case 0:
-                printf("Logging out...\n");
+                printf("\tLogging out...\n");
                 break;
             default:
-                printf("Invalid choice. Please try again.\n");
+                printf("\tInvalid choice. Please try again.\n");
         }
 
     } while (choice != 0);
