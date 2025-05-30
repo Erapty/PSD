@@ -1,7 +1,6 @@
-mario_rossi Mario Rossi
-luigi_verdi Luigi Verdi
-giuseppe_santaniello Giuseppe Santaniello
-marco_tucci Marco Tucci
-roberto_pucci Roberto Pucci
-anna_bianchi Anna Bianchi
-
+mario_rossi mario rossi
+luigi_verdi luigi verdi
+giuseppe_santaniello giuseppe santaniello
+marco_tucci marco tucci
+roberto_pucci roberto pucci
+anna_bianchi anna bianchi
