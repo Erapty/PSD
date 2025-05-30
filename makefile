@@ -1,9 +1,14 @@
+run: main.exe
+	./main.exe
+
+test: run_test_suite.exe
+	./run_test_suite.exe
+
 main.exe: main.o admin.o client.o storage.o user.o vehicle.o booking.o hash.o list.o timeutils.o
 	gcc main.o admin.o client.o storage.o user.o vehicle.o booking.o hash.o list.o timeutils.o -o main.exe
 
 run_test_suite.exe: run_test_suite.o admin.o client.o storage.o user.o vehicle.o booking.o hash.o list.o timeutils.o
 	gcc run_test_suite.o admin.o client.o storage.o user.o vehicle.o booking.o hash.o list.o timeutils.o -o run_test_suite.exe
-	./run_test_suite.exe
 
 main.o: main.c admin.h client.h storage.h
 	gcc -c main.c
