@@ -1,15 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-
-#include "hash.h"
-#include "list.h"
-#include "user.h"
 #include "vehicle.h"
 #include "booking.h"
+#include "user.h"
+#include "hash.h"
+#include "list.h"
 #include "storage.h"
 #include "timeutils.h"
+
 
 #define MAX_LINE 256
 
@@ -28,31 +27,40 @@ void readLine(FILE* f, char* buffer) {
 /*
  * Compares two files line by line.
  *
- * outFile: path to generated output file
- * oracleFile: path to expected oracle file
+ * file1: first file to compare
+ * file2: second file to compare
  *
- * returns: 1 if files match exactly, 0 otherwise
+ * Returns 1 if files match exactly, 0 otherwise
  */
-int compareFiles(const char* outFile, const char* oracleFile) {
-    FILE* f1 = fopen(outFile, "r");
-    FILE* f2 = fopen(oracleFile, "r");
+int compareFiles(const char* file1, const char* file2) {
+    FILE* f1 = fopen(file1, "r");
+    FILE* f2 = fopen(file2, "r");
     if (!f1 || !f2) return 0;
 
-    char line1[MAX_LINE], line2[MAX_LINE];
-    while (fgets(line1, MAX_LINE, f1) && fgets(line2, MAX_LINE, f2)) {
+    char line1[256], line2[256];
+    int result = 1;
+
+    while (fgets(line1, sizeof(line1), f1) && fgets(line2, sizeof(line2), f2)) {
+        // Rimuove newline finali (compatibile con \r\n e \n)
+        line1[strcspn(line1, "\r\n")] = 0;
+        line2[strcspn(line2, "\r\n")] = 0;
+
         if (strcmp(line1, line2) != 0) {
-            fclose(f1);
-            fclose(f2);
-            return 0;
+            result = 0;
+            break;
         }
     }
 
-    int end1 = fgets(line1, MAX_LINE, f1) == NULL;
-    int end2 = fgets(line2, MAX_LINE, f2) == NULL;
+    // Se uno dei file ha righe in più
+    if ((fgets(line1, sizeof(line1), f1) != NULL) || (fgets(line2, sizeof(line2), f2) != NULL)) {
+        result = 0;
+    }
+
     fclose(f1);
     fclose(f2);
-    return end1 && end2;
+    return result;
 }
+
 
 /*
  * Executes a test case that attempts to create a booking from an input file.
@@ -80,7 +88,6 @@ void test_create_booking(HashTable* vehicleTable, HashTable* userTable, List boo
     char username[50], plate[20], datetime[32];
     int duration = 0;
 
-    // Read input parameters
     if (!fgets(username, sizeof(username), in) ||
         !fgets(plate, sizeof(plate), in) ||
         !fgets(datetime, sizeof(datetime), in) ||
@@ -91,7 +98,6 @@ void test_create_booking(HashTable* vehicleTable, HashTable* userTable, List boo
         return;
     }
 
-    // Clean input lines
     username[strcspn(username, "\n")] = 0;
     plate[strcspn(plate, "\n")] = 0;
     datetime[strcspn(datetime, "\n")] = 0;
@@ -101,7 +107,6 @@ void test_create_booking(HashTable* vehicleTable, HashTable* userTable, List boo
     long start = convertToTimestamp(datetime);
     long end = start + duration * 3600;
 
-    // Check availability and attempt booking
     if (!isVehicleAvailable(bookingList, plate, start, end)) {
         fprintf(out, "This vehicle is not available in the selected period. Try another.\n");
     } else {
@@ -150,7 +155,7 @@ int main() {
     HashTable* userTable = createHashTable();
     List bookingList = createList();
 
-    // Load initial data from text files
+    // Load default data (for TestCase1 and TestCase2)
     LoadVehiclesFromFile(vehicleTable, "vehicles.txt");
     LoadUsersFromFile(userTable, "users.txt");
     LoadBookingsFromFile(bookingList, "bookings.txt", vehicleTable, userTable);
@@ -162,20 +167,27 @@ int main() {
     }
 
     FILE* result = fopen("result.txt", "w");
-    char caseName[64];
-    int paramCount;
+    if (!result) {
+        fclose(suite);
+        return 1;
+    }
 
-    // Loop through each test case in the suite
-    while (fscanf(suite, "%s %d", caseName, &paramCount) == 2) {
+    char caseName[64];
+    int expected;
+
+    while (fscanf(suite, "%s %d", caseName, &expected) == 2) {
         char oracleFile[64], outputFile[64];
         sprintf(oracleFile, "%s_oracle.txt", caseName);
         sprintf(outputFile, "%s_output.txt", caseName);
 
         if (strcmp(caseName, "TestCase3") == 0) {
-            // Special test: print user history
+
+            freeList(bookingList);
+            bookingList = createList();
+            LoadBookingsFromFile(bookingList, "TestCase3_input.txt", vehicleTable, userTable);
+
             test_user_history_from_file(bookingList, "mario_rossi", outputFile, oracleFile, result);
         } else {
-            // Standard booking test
             test_create_booking(vehicleTable, userTable, bookingList, caseName);
             int pass = compareFiles(outputFile, oracleFile);
             fprintf(result, "%s: %s\n", caseName, pass ? "PASS" : "FAIL");
@@ -183,7 +195,6 @@ int main() {
         }
     }
 
-    // Cleanup
     fclose(suite);
     fclose(result);
     freeHashTable(vehicleTable);
@@ -192,3 +203,4 @@ int main() {
 
     return 0;
 }
+
